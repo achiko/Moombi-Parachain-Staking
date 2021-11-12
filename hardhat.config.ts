@@ -32,7 +32,7 @@ const config: HardhatUserConfig = {
     },
     moonbase: {
       url: "https://rpc.testnet.moonbeam.network",
-      chainId: 1281,
+      chainId: 1287,
       accounts: [privatKey], // Insert your private key here
     },
     ropsten: {

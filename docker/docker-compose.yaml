@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  moonbeam-node:
+    volumes:
+      - "./moonbeam-data:/data"
+    networks:
+      # - dev-host
+      - int_net
+    ports:
+      - 9933:9933
+      - 9944:9944
+      - 9615:9615
+      - 30334:30334
+      - 30333:30333
+    image: purestake/moonbeam:v0.13.2
+    command: |
+      --base-path=/data
+      --chain dev
+      --name=chorus-moonbase-alpha
+      --validator
+      --execution wasm
+      --wasm-execution compiled
+      --pruning archive
+      --prometheus-external
+      --unsafe-rpc-external
+      --unsafe-ws-external
+      --rpc-cors all
+      --state-cache-size 1
+        --
+        --pruning archive
+        --name="dev-chorus-moonbase-alpha-local"
+networks:
+  host:
+    external: true
+  int_net:
+    internal: true

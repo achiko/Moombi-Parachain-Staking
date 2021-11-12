@@ -15,6 +15,7 @@ describe("Staking contract", function () {
   it("#1 Test ", async function () {
     const [deployer] = await ethers.getSigners();
     console.log("Deployer Address : ", await deployer.getAddress());
+    console.log("Deployer Balance : ", await deployer.getBalance());
 
     // userA: borrow USDC
     // await cUSDC.connect(userA).borrow(parseUnits("123", 6));
