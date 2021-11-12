@@ -12,15 +12,7 @@ contract Staking {
         staking = ParachainStaking(0x0000000000000000000000000000000000000800);
         // console.log(">>> Is Nominator? %s", staking.is_nominator(address(this)));
     }
-
-    // function cTokens() public view returns (string memory) {
-    //     address[] memory cTokens = comptroller.getAllMarkets();
-    //     uint len = cTokens.length;
-    //     for (uint i = 0; i < len; i++) {
-    //         CTokenInterface cToken = CTokenInterface(cTokens[i]);
-    //         console.log('>>>> cToken Name : %s', cToken.name());
-    //     }
-    // }
+    
 
     // TODO: code here 
 }
