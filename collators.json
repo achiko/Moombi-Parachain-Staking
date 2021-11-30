@@ -1,0 +1,57 @@
+{
+  "id": "0x9468795910d1463497cc77105e3fb634b0604d6a",
+  "bond": "0x000000000000003635c9adc5dea00000",
+  "nominators": [
+    "0x2e4b878140228850ce54328e2efbf21e90331450",
+    "0x454c2e90c7a9c403976ce241ffcdb48687dd3dd9",
+    "0x4cd3a2c65b300265647c27f865ef527c7152fc8f",
+    "0x60bb9bad6870e1f0a589e23ce5af785fe5848a6b",
+    "0x6b3a16d340a05a349f83952fbef331fcf9592c2b",
+    "0x8fc4abee7094bec8f072cb50cea6a27fb77b5183",
+    "0x980a36ecafdf6facba86bf8f4896cb013fba3f06",
+    "0xbe862b4d355ecd39bbf23d7f939dc35ab86c4dbd",
+    "0xd1fbd01776383bb15b42533bf21d1a0d2861d9f3"
+  ],
+  "topNominators": [
+    {
+      "owner": "0x980a36ecafdf6facba86bf8f4896cb013fba3f06",
+      "amount": "0x000000000000043c33c1937564800000"
+    },
+    {
+      "owner": "0x6b3a16d340a05a349f83952fbef331fcf9592c2b",
+      "amount": "0x000000000000000ce6e9db059ef80000"
+    },
+    {
+      "owner": "0x60bb9bad6870e1f0a589e23ce5af785fe5848a6b",
+      "amount": "0x0000000000000002b5e3af16b1880000"
+    },
+    {
+      "owner": "0x454c2e90c7a9c403976ce241ffcdb48687dd3dd9",
+      "amount": "0x0000000000000002629f66e0c5300000"
+    },
+    {
+      "owner": "0xbe862b4d355ecd39bbf23d7f939dc35ab86c4dbd",
+      "amount": "0x00000000000000020f5b1eaad8d80000"
+    },
+    {
+      "owner": "0x8fc4abee7094bec8f072cb50cea6a27fb77b5183",
+      "amount": "0x000000000000000100bd33fb98ba0000"
+    },
+    {
+      "owner": "0x4cd3a2c65b300265647c27f865ef527c7152fc8f",
+      "amount": "0x000000000000000098a7d9b8314c0000"
+    },
+    {
+      "owner": "0x2e4b878140228850ce54328e2efbf21e90331450",
+      "amount": "0x00000000000000008ac7230489e80000"
+    },
+    {
+      "owner": "0xd1fbd01776383bb15b42533bf21d1a0d2861d9f3",
+      "amount": "0x000000000000000075f610f70ed20000"
+    }
+  ],
+  "bottomNominators": [],
+  "totalCounted": "0x00000000000004891275929294680000",
+  "totalBacking": "0x00000000000004891275929294680000",
+  "state": { "active": null }
+}

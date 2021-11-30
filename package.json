@@ -32,6 +32,8 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "^4.4.0",
+    "@polkadot/api": "^6.9.2",
     "@thenextblock/hardhat-compound": "^0.0.11"
   }
 }

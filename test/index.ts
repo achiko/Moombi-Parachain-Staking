@@ -1,23 +1,92 @@
-import hre, { ethers } from "hardhat";
-import { formatUnits, parseUnits } from "ethers/lib/utils";
-import { assert } from "chai";
-import { deployErc20Token, Erc20Token } from "@thenextblock/hardhat-erc20";
-import {
-  CTokenDeployArg,
-  deployCompoundV2,
-  Comptroller,
-} from "@thenextblock/hardhat-compound";
-import "colors";
+import hre, { ethers } from 'hardhat'
+import { formatUnits, parseUnits } from 'ethers/lib/utils'
+import { assert } from 'chai'
+import { Staking__factory, MokStake__factory } from '../typechain'
 
-ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR);
+import 'colors'
 
-describe("Staking contract", function () {
-  it("#1 Test ", async function () {
-    const [deployer] = await ethers.getSigners();
-    console.log("Deployer Address : ", await deployer.getAddress());
-    console.log("Deployer Balance : ", await deployer.getBalance());
+ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR)
 
-    // userA: borrow USDC
-    // await cUSDC.connect(userA).borrow(parseUnits("123", 6));
-  });
-});
+describe('Staking contract', function () {
+  it.skip('# 0 ...', async function () {
+    const [deployer] = await ethers.getSigners()
+    assert(true)
+  })
+
+  it('# 1 Test sToken ', async function () {
+    const [deployer, nominator] = await ethers.getSigners()
+    const deployerAddress = await deployer.getAddress()
+    console.log('Deployer address : ', deployerAddress)
+
+    const mockPrecompiled = await new MokStake__factory(deployer).deploy()
+    await mockPrecompiled.deployed()
+    const precompiledMockContract = mockPrecompiled.address
+
+    const stakingFactory = await new Staking__factory(deployer).deploy(precompiledMockContract)
+    await stakingFactory.deployed()
+
+    assert.equal(await stakingFactory.symbol(), 'sToken')
+    await stakingFactory.deposit({ value: parseUnits('1', 18) })
+
+    const genesisBalance = await stakingFactory.balanceOf(deployerAddress)
+    assert.isTrue(genesisBalance.eq(parseUnits('1', 18)), 'Wrong Genesis Price !!!')
+
+    console.log(` ---- Nominator ---- `)
+    await stakingFactory.connect(nominator).deposit({ value: parseUnits('1', 18) })
+    const nominatorBalance1 = await stakingFactory.balanceOf(nominator.address)
+    console.log(' Nomionator Balance : ', nominatorBalance1.toString())
+
+    await stakingFactory.connect(nominator).deposit({ value: parseUnits('1', 18) })
+    const nominatorBalance2 = await stakingFactory.balanceOf(nominator.address)
+    console.log(' Nomionator Balance : ', nominatorBalance2.toString())
+
+    await stakingFactory.connect(nominator).deposit({ value: parseUnits('1', 18) })
+    const nominatorBalance3 = await stakingFactory.balanceOf(nominator.address)
+    console.log(' Nomionator Balance : ', nominatorBalance3.toString(), 'Denom: ', formatUnits(nominatorBalance3, 18))
+
+    await deployer.sendTransaction({ to: stakingFactory.address, value: parseUnits('20', 18) })
+
+    await stakingFactory.connect(nominator).deposit({ value: parseUnits('20', 18) })
+    const nominatorBalance4 = await stakingFactory.balanceOf(nominator.address)
+    console.log(' Nomionator Balance : ', nominatorBalance4.toString(), 'Denom: ', formatUnits(nominatorBalance4, 18))
+
+    assert(true)
+  })
+
+  it.skip('# 2 Deploy Staking Contract & Test Precopiled values ', async function () {
+    const [deployer, nominator] = await ethers.getSigners()
+
+    console.log('Deployer Balance : ', formatUnits(await deployer.getBalance(), 18))
+
+    const precompiledAddress = '0x0000000000000000000000000000000000000800'
+
+    // const mockPrecompiled = await new MokStake__factory(deployer).deploy();
+    // await mockPrecompiled.deployed();
+    // const mockAdress = mockPrecompiled.address;
+
+    const stakingFactory = await new Staking__factory(deployer).deploy(precompiledAddress)
+    await stakingFactory.deployed()
+    console.log('Staking Factory Address:', stakingFactory.address)
+
+    const collator = '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac'
+    let isSelectedCandidate = await stakingFactory.isSelectedCandidate(collator)
+
+    console.log(`Collator: ${collator} Is Selected Candidate :  ${isSelectedCandidate}`)
+
+    const gasPrice = await ethers.provider.getGasPrice()
+    console.log('gasPrice : ', gasPrice.toString())
+
+    const gasEstimation = await stakingFactory.estimateGas.nominate(collator, parseUnits('6', 18))
+    console.log('Gas Estimation : ', gasEstimation.toString())
+
+    // let tx = await stakingFactory
+    //   .connect(nominator)
+    //   .nominate(collator, parseUnits("6", 18), { gasPrice: 1000000000 });
+
+    // let result = tx.wait();
+
+    // console.log(result);
+
+    assert(true)
+  })
+})

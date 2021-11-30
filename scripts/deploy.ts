@@ -13,13 +13,13 @@ async function main() {
   console.log("Deployer address : ", await deployer.getAddress());
   // console.log("Deployer Balance : ", await deployer.getBalance());
 
-  const Staking = await ethers.getContractFactory("Staking");
-  console.log("Deploying Staking...");
+  // const Staking = await ethers.getContractFactory("Staking");
+  // console.log("Deploying Staking...");
 
   // Instantiating a new Box smart contract
-  const staking = await Staking.deploy();
-  await staking.deployed();
-  console.log("Staking Deployed : ", staking.address);
+  // const staking = await Staking.deploy();
+  // await staking.deployed();
+  // console.log("Staking Deployed : ", staking.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
