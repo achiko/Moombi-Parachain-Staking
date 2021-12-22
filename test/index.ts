@@ -1,11 +1,12 @@
 import hre, { ethers } from 'hardhat'
 import { formatUnits, parseUnits } from 'ethers/lib/utils'
 import { assert } from 'chai'
-import { Staking__factory, MokStake__factory } from '../typechain'
-
+import { Staking__factory, Staking, MokStake__factory } from '../typechain'
 import 'colors'
-
 ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR)
+
+let COLLATOR = '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac'
+let STAKING_CONTRACT_ADDRESS = ''
 
 describe('Staking contract', function () {
   it.skip('# 0 ...', async function () {
@@ -13,7 +14,8 @@ describe('Staking contract', function () {
     assert(true)
   })
 
-  it('# 1 Test sToken ', async function () {
+  //TODO : Move this part to separate the LOCAL tests
+  it.skip('# 1 Test sToken (local hardhat)', async function () {
     const [deployer, nominator] = await ethers.getSigners()
     const deployerAddress = await deployer.getAddress()
     console.log('Deployer address : ', deployerAddress)
@@ -53,11 +55,10 @@ describe('Staking contract', function () {
     assert(true)
   })
 
-  it.skip('# 2 Deploy Staking Contract & Test Precopiled values ', async function () {
+  it('# 2 Deploy Staking Contract & Test Precompiled ', async function () {
     const [deployer, nominator] = await ethers.getSigners()
 
     console.log('Deployer Balance : ', formatUnits(await deployer.getBalance(), 18))
-
     const precompiledAddress = '0x0000000000000000000000000000000000000800'
 
     // const mockPrecompiled = await new MokStake__factory(deployer).deploy();
@@ -68,24 +69,36 @@ describe('Staking contract', function () {
     await stakingFactory.deployed()
     console.log('Staking Factory Address:', stakingFactory.address)
 
-    const collator = '0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac'
-    let isSelectedCandidate = await stakingFactory.isSelectedCandidate(collator)
+    STAKING_CONTRACT_ADDRESS = stakingFactory.address
 
-    console.log(`Collator: ${collator} Is Selected Candidate :  ${isSelectedCandidate}`)
+    let isSelectedCandidate = await stakingFactory.isSelectedCandidate(COLLATOR)
+
+    console.log(`Collator: ${COLLATOR} Is Selected Candidate :  ${isSelectedCandidate}`)
 
     const gasPrice = await ethers.provider.getGasPrice()
+    console.log('Gas Price gwei : ', formatUnits(gasPrice, 'gwei'))
     console.log('gasPrice : ', gasPrice.toString())
 
-    const gasEstimation = await stakingFactory.estimateGas.nominate(collator, parseUnits('6', 18))
-    console.log('Gas Estimation : ', gasEstimation.toString())
+    assert(true)
+  })
 
-    // let tx = await stakingFactory
-    //   .connect(nominator)
-    //   .nominate(collator, parseUnits("6", 18), { gasPrice: 1000000000 });
+  it('# 3 Work with existing Staking Contract ', async function () {
+    // const [deployer, nominator] = await ethers.getSigners()
+    // const instance = Staking__factory.connect(STAKING_CONTRACT_ADDRESS, deployer)
+    // await instance.deposit({ value: parseUnits('100', 18) })
+    // const contractBalance = formatUnits(await instance.getTotalGLMR(), 18)
+    // console.log('Contract balance : ', contractBalance);
 
-    // let result = tx.wait();
+    // const amountToNominate = parseUnits('5', 18)
+    // let tx = await instance.nominate(COLLATOR, amountToNominate, { gasLimit: '2000000', gasPrice: parseUnits('1', 'gwei') })
+    // let result = await tx.wait()
+    // console.log('status : ', result.status)
 
-    // console.log(result);
+    // console.log('----------------- Revoke Nominator ---------------------- ')
+    // let tx1 = await instance.revokeNomination(COLLATOR, { gasLimit: '2000000', gasPrice: parseUnits('1', 'gwei') })
+    // let result1 = await tx1.wait()
+    // console.log(result1)
+    // console.log('status : ', result1.status)
 
     assert(true)
   })

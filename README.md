@@ -37,6 +37,12 @@ docker run --rm --name moonbeam_development --network host purestake/moonbeam:v0
 
 ```
 
+```
+docker run --rm --name moonbeam_development -p 9944:9944 -p 9933:9933 \
+    purestake/moonbeam:v0.16.0 \
+        --dev --ws-external --rpc-external
+```
+
 ```json
 
 curl -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method":

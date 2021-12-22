@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract StakeToken is ERC20, Ownable {
+contract STGLMR is ERC20, Ownable {
 
     constructor() ERC20("STake Token", "sToken") {
         // console.log(">>> - Creating Token >>> ");

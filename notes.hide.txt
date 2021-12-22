@@ -1,0 +1,29 @@
+stGLMR
+
+
+Percentage  =  usersTokens/totalTokens
+
+function getTotalGLMR () returns (uint256) {
+	uint totalGlmr =  thisBalance + totalStaked;
+	return totalGlmr;
+}
+
+getUserBalance(address) returns (uint256) {
+	uint share  = usersTokens/totalTokens;
+	uint userGlmr =  totalGlmr * userShare / 100;
+}
+
+
+
+
+docker run --network="host" -v "/moondata:/data" \
+-u $(id -u ${USER}):$(id -g ${USER}) \
+purestake/moonbeam-tracing:v0.16.0-1001-9ddc \
+--base-path=/data \
+--name="Moonbeam-Tutorial" \
+--pruning archive \
+--state-cache-size 1 \
+--db-cache 50% \
+--ethapi=debug,trace,txpool \
+--wasm-runtime-overrides=/moonbeam/moonbase-substitutes-tracing \
+--dev

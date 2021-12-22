@@ -42,12 +42,12 @@ const config: HardhatUserConfig = {
       // gasPrice: 1000000000,
     },
     moonbase: {
-      url: 'https://rpc.testnet.moonbeam.network',
+      url: process.env.RPC_URL || '',
       chainId: 1287,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
     },
     ropsten: {
-      url: process.env.ROPSTEN_URL || '',
+      url: process.env.RPC_URL || '',
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : []
     }
   },
