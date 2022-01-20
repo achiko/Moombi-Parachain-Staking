@@ -5,10 +5,10 @@ import * as dotenv from 'dotenv'
 dotenv.config()
 
 async function main() {
-  console.log('RPC_URL : ', process.env.RPC_WS)
-
+  // console.log('RPC_URL : ', process.env.RPC_WS)
   // Initialise the provider to connect to the local node
   // const provider = new WsProvider('wss://moonbeam-alpha.api.onfinality.io/public-ws')
+
   const provider = new WsProvider('ws://127.0.0.1:9944')
 
   // Create the API and wait until ready
@@ -24,8 +24,17 @@ async function main() {
   console.log('Result :', collatorInfo.toJSON())
 
   const selectedCandidates = await api.query.parachainStaking.selectedCandidates()
-  console.log('----  Selected Candidates ---')
+  console.log('----  Selected Candidates ---- ')
   console.log(selectedCandidates.toJSON())
+
+  console.log('List Delegators of Selected Candidate')
+  const candidateInfo = await api.query.parachainStaking.candidateState(collatorAccount)
+  // console.log(candidateInfo.toHuman()["delegators"].length);
+  console.log('candidateInfo : ', candidateInfo.toHuman())
+
+  // let test = await api.query.parachainStakin.candidateState(collatorAccount)
+
+
 }
 
 main()

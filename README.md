@@ -20,27 +20,14 @@ https://github.com/PureStake/moonbeam/issues/930#issuecomment-955189036
 docker run --rm --name moonbeam_development --network host purestake/moonbeam:v0.14.2 --dev --rpc-methods unsafe --rpc-external --ws-external --pool-limit 100000 --ws-port 9944 --rpc-cors all
 ```
 
+# Working Version
+
 ```bash
-    docker run --network="host" -d -v "/var/lib/alphanet-data:/data" \
-    -u $(id -u root):$(id -g root) \
-    purestake/moonbeam:v0.14.2 \
-    --base-path=/data \
-    --chain alphanet \
-    --name="thenextblock-1" \
-    --execution wasm \
-    --wasm-execution compiled \
-    --pruning archive \
-    --state-cache-size 1 \
-    -- \
-    --pruning archive \
-    --name="thenextblock.com-1 (Embedded Relay)"
 
-```
-
-```
-docker run --rm --name moonbeam_development -p 9944:9944 -p 9933:9933 \
-    purestake/moonbeam:v0.16.0 \
-        --dev --ws-external --rpc-external
+    docker run --rm --name moonbeam_development -p 9944:9944 -p 9933:9933 \
+        purestake/moonbeam:v0.18.0 \
+            --dev --ws-external --rpc-external --sealing 100
+                    
 ```
 
 ```json

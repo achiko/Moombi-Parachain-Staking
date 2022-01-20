@@ -14,8 +14,6 @@ getUserBalance(address) returns (uint256) {
 }
 
 
-
-
 docker run --network="host" -v "/moondata:/data" \
 -u $(id -u ${USER}):$(id -g ${USER}) \
 purestake/moonbeam-tracing:v0.16.0-1001-9ddc \

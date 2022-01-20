@@ -1,152 +1,177 @@
 //SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-
 import "./STGLMR.sol";
 import "./StakingInterface.sol";
 import "hardhat/console.sol";
 
-
-contract Staking is STGLMR  {
-    
+contract Staking is STGLMR {
     using SafeMath for uint256;
-    using SafeMath for uint;
+    using SafeMath for uint256;
 
-    uint public totalStaked;
-    uint public totalRewarded;
+    uint256 public totalDeposited;
+    uint256 public totalStaked;
+    uint256 public totalRewarded;
+
     address public admin;
     bool public withdrawAllowed;
     ParachainStaking private stakingContract;
 
-    event Nominate(address indexed _from, address indexed _nominator, address indexed _collator,  uint _collatorNominationCount,  uint __nominatorNominationCount, uint _amount);
-    event RevokeNomination(address indexed _from, address indexed _collator);
-    event PrecompiedContractChanged(address indexed _newPrecompiled, address indexed _oldPrecompiled);
+    event Deposit(address indexed _from, uint256 _amount);
 
-    // Mainnet Precompoled address is:  0x0000000000000000000000000000000000000800
+    //msg.sender, delegator, _candidate, candidateDelegationCount, delegatorDelegationCount, _amount
+    event Nominate(
+        address indexed _from,
+        address indexed _delegator,
+        address indexed _candidate,
+        uint256 _candidateDelegationCount,
+        uint256 _delegatorDelegationCount,
+        uint256 _amount
+    );
+    event RevokeNomination(address indexed _from, address indexed _collator);
+    event PrecompiledAddressChanged(address indexed _newPrecompiled, address indexed _oldPrecompiled);
+    event WithdrawGLMR(address indexed _from, uint _amount);
+
+    // Mainnet Precompiled address is:  0x0000000000000000000000000000000000000800
 
     constructor(address _precompiled) payable {
         stakingContract = ParachainStaking(_precompiled);
         totalStaked = 0;
         totalRewarded = 0;
+        totalDeposited = msg.value;
         admin = msg.sender;
         withdrawAllowed = false;
-        _mint(address(this), 1*10**18); // mint 1 token for contract ? s
+        _mint(address(this), 1 * 10**18); // mint 1 token to avoid division by zero in deposit function
     }
 
-    // TOTO: Only Owner or DAO 
+    /**
+     * @notice Get a snapshot of Staking contract
+     * @dev Used for external view
+     * @return (TotalGLMR, _totalDeposited, _totalStaked, _totalRewarded)
+     */
+    function getContractSnapshot() external view returns (uint,uint,uint,uint) {
+            return (getTotalGLMR(), totalDeposited, totalStaked, totalRewarded );
+    }
+
+    // TOTO: Only Owner or DAO
     function allowWithdrawal() public {
         withdrawAllowed = true;
     }
 
-    // TODO: Add change precompiled contract instance 
-    // TODO: Add onlyAdmin
+    // TODO: Add change precompiled contract instance
+    // TODO: Add OnlyAdmin
+
     function changePrecompiledContract(address _newPrecompiled) public {
         address _oldPrecompiled = address(stakingContract);
         stakingContract = ParachainStaking(_newPrecompiled);
-        emit PrecompiedContractChanged(_newPrecompiled, _oldPrecompiled);
+        emit PrecompiledAddressChanged(_newPrecompiled, _oldPrecompiled);
     }
-
 
     function getTotalGLMR() public view returns (uint256) {
-	    uint totalGlmr = _getTotalGLMR();
-	    return totalGlmr;
+        return _getTotalGLMR();
     }
 
-    function _getTotalGLMR() private view returns(uint) {
-        return totalStaked;
+    /// TotalGLMR = SmartcontractBalance + StakedAmount
+    function _getTotalGLMR() private view returns (uint256) {
+        return address(this).balance;
+        // return address(this).balance + totalStaked;
     }
 
-    // Ovverride classic BalanceOf function 
+    // Override classic BalanceOf function
+    // This Function will return User Balance
     function balanceOf(address _account) public view override returns (uint256) {
-        uint256 accountBalance = super.balanceOf(_account);
-        return accountBalance;
+        uint256 userTokens = super.balanceOf(_account);
+        uint256 share = userTokens / totalSupply();
+        uint256 userGLMR = _getTotalGLMR() * share;
+        return userGLMR;
+    }
+
+    // return exact Amount of stGLMR
+    function tokenBalance(address _account) public view returns (uint256) {
+        uint256 userTokens = super.balanceOf(_account);
+        return userTokens;
     }
 
 
-    // Deposit Function 
-    // TODO: Add checks msg.value != 0 , 
-    // TODO: Add modifier whenNotPaused (From zeppelin) 
-    // TODO: What is share token ratio ? 
-    
+    event DepositSnapShot(
+        address indexed from,
+        uint256 blockNumber,
+        uint256 totalDeposited,
+        uint256 totalSupply,
+        uint256 totalGLMR,
+        uint256 tokenPrice,
+        uint256 tokenAmount
+    );
+
+    // Deposit Function
+    // TODO: Add modifier whenNotPaused (From zeppelin)
     function deposit() public payable {
-        
         require(msg.value != 0, "WRONG DEPOSIT AMOUNT !");
-        // require(_getTotalGLMR(); != 0, "NO RESERVE");
+        require(_getTotalGLMR() != 0, "NO RESERVE");
 
-        totalStaked += msg.value;
-        console.log("Total Staked: %s", totalStaked);
+        uint256 depositAmount = msg.value;
+        totalDeposited.add(depositAmount);
         
-        // LP tokens total supply
-        uint256 totalSupply = totalSupply(); 
-        // console.log(">>> TotalSupply: ", totalSupply);
+        uint256 _totalSupply = totalSupply();
 
-        // Lp Tokens Circulating supply
-        uint256 totalGLMR = _getTotalGLMR();
-        // console.log(">>> totalGlmr: ", totalGLMR);
+        uint256 _totalGLMR = _getTotalGLMR();
+
+        uint256 tokenPrice = _totalGLMR / _totalSupply;
+
+        uint256 tokenAmount = depositAmount / tokenPrice;
+
+        emit DepositSnapShot(msg.sender,block.number,totalDeposited,_totalSupply,_totalGLMR,tokenPrice,tokenAmount);
+
+        emit Deposit(msg.sender, msg.value);
         
-        uint256 tokenPrice = totalGLMR/totalSupply;
-
-        uint tokenAmount = msg.value/tokenPrice;
-
         _mint(msg.sender, tokenAmount);
     }
 
-
-    // TODO: withdraw must be disabled 
-    function withdraw(uint _amount) external {
-        require(msg.sender == admin, "ONLY ADMIN CAN WITHDRAW");
+    // TODO: withdraw must be disabled
+    function withdraw(uint256 _amount) external {
         address sender = msg.sender;
+        require(sender == admin, "ONLY ADMIN CAN WITHDRAW");
         // This is the current recommended method to use.
         (bool sent, ) = sender.call{value: _amount}("");
         require(sent, "Failed to send Funds ");
-    }
-    
-
-    // TODO: Research falback & receive
-
-    // fallback() external payable { 
-    //     // ?? Deposit ? ?? 
-    // }
-
-    // receive() external payable { 
-    //     deposit();
-    // }
-
-
-
-    
-    function nominate(
-        address _collator,
-        uint256 _amount
-    ) external {
-
-        address nominator = address(this);
-        uint256 _collatorNominationCount = stakingContract.collator_nomination_count(_collator);
-        uint256 _nominatorNominationCount = stakingContract.nominator_nomination_count(nominator);
-        stakingContract.nominate(_collator, _amount, _collatorNominationCount, _nominatorNominationCount);
-
-        emit Nominate(msg.sender, nominator, _collator, _collatorNominationCount, _nominatorNominationCount, _amount);
+        emit WithdrawGLMR(sender, _amount);
     }
 
 
-    function revokeNomination(address _collator) external {
-        stakingContract.revoke_nomination(_collator);
-        emit RevokeNomination(msg.sender, _collator);
+    ///////////////////////  Parachain Staking Part  //////////////////////
+
+    function delegate(address _candidate, uint256 _amount) external {
+        address delegator = address(this);
+
+        uint256 candidateDelegationCount = stakingContract.candidate_delegation_count(_candidate);
+        uint256 delegatorDelegationCount = stakingContract.delegator_delegation_count(delegator);
+        stakingContract.delegate(_candidate, _amount, candidateDelegationCount, delegatorDelegationCount);
+
+        emit Nominate(msg.sender, delegator, _candidate, candidateDelegationCount, delegatorDelegationCount, _amount);
     }
 
-    
-    function isNominator(address _nominator) external view returns (bool) {
+
+    // This function should leave all delegations -- testing mode
+    function leaveDelegations() public {
+        stakingContract.schedule_leave_delegators();
+        uint256 delegatorDelegationCount = stakingContract.delegator_delegation_count(address(this));
+        stakingContract.execute_leave_delegators(delegatorDelegationCount);
+    }
+
+    function schedule_revoke_delegation(address _candidate) public {
+        stakingContract.schedule_revoke_delegation(_candidate);
+    }
+
+    function is_delegator(address _nominator) external view returns (bool) {
         return stakingContract.is_nominator(_nominator);
     }
 
-    function collatorNominationCount(address _collator) external view returns (uint256) {
-        return stakingContract.collator_nomination_count(_collator);
+    function candidate_delegation_count(address _collator) external view returns (uint256) {
+        return stakingContract.candidate_delegation_count(_collator);
     }
 
-    function isSelectedCandidate(address _collator) external view returns (bool) {
+    function is_selected_candidate(address _collator) external view returns (bool) {
         return stakingContract.is_selected_candidate(_collator);
     }
-
 }
