@@ -26,8 +26,8 @@ docker run --rm --name moonbeam_development --network host purestake/moonbeam:v0
 
     docker run --rm --name moonbeam_development -p 9944:9944 -p 9933:9933 \
         purestake/moonbeam:v0.18.0 \
-            --dev --ws-external --rpc-external --sealing 100
-                    
+            --dev --ws-external --rpc-external --sealing 1000
+
 ```
 
 ```json
