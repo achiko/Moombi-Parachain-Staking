@@ -195,7 +195,7 @@ contract STGLMR is IERC20, Ownable {
      */
     function transferFrom(address _sender, address _recipient, uint256 _amount) public override returns (bool) {
         uint256 currentAllowance = allowances[_sender][msg.sender];
-        require(currentAllowance >= _amount, "TRANSFER_AMOUNT_EXCEEDS_ALLOWANCE");
+        require(currentAllowance >= _amount, "AMOUNT_EXCEEDS_ALLOWANCE");
 
         _transfer(_sender, _recipient, _amount);
         _approve(_sender, msg.sender, currentAllowance - _amount );
@@ -203,15 +203,25 @@ contract STGLMR is IERC20, Ownable {
     }
 
 
+    /// @dev Get Contract GLMR Balance 
+    /// @return The GLMR Balance 
+    function getGLMRBalance() external view returns(uint) {
+        return address(this).balance;
+    }
 
+    /**
+    * @dev Gets The Total Shares
+    * @return total shares wei
+    */
     function _getTotalShares() internal view returns (uint256) {
         return totalShares;
     }
-
+    
     /**
     * @dev Gets the total amount of GLMR controlled by the system
     * @return total balance in wei
     */
+    // TODO: This function need to be modified and testsd carefully 
     function _getTotalPooledGLMR() internal view returns (uint256) {
         //return totalDeposited; // this is temporary 
         if(totalStaked < totalDeposited) {

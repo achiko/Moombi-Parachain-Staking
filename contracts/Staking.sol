@@ -8,7 +8,7 @@ import "./StakingInterface.sol";
 import "hardhat/console.sol";
 
 contract Staking is STGLMR {
-    ParachainStaking private stakingContract;
+    ParachainStaking public stakingContract;
     address public admin;
     bool public withdrawAllowed;
 
@@ -29,15 +29,15 @@ contract Staking is STGLMR {
         admin = msg.sender;
         withdrawAllowed = false;
     }
+    
 
     // TOTO: Only Owner or DAO
     function allowWithdrawal() public {
         withdrawAllowed = true;
     }
 
-    // TODO: Add change precompiled contract instance
-    // TODO: Add OnlyAdmin
-    function changePrecompiledContract(address _newPrecompiled) public {
+
+    function changePrecompiledContract(address _newPrecompiled) public onlyOwner {
         address _oldPrecompiled = address(stakingContract);
         stakingContract = ParachainStaking(_newPrecompiled);
         emit PrecompiledAddressChanged(_newPrecompiled, _oldPrecompiled);
@@ -45,35 +45,40 @@ contract Staking is STGLMR {
 
     ///////////////////////  Parachain Staking Part  //////////////////////
 
-    function delegateCall(address _candidate, uint256 _amount) external  {
-        address delegator = address(this);
-
-        uint256 candidateDelegationCount = stakingContract.candidate_delegation_count(_candidate);
-        // uint256 delegatorDelegationCount = stakingContract.delegator_delegation_count(delegator);
-        // stakingContract.delegate(_candidate, _amount, candidateDelegationCount, delegatorDelegationCount);
-        // emit Nominate(msg.sender, delegator, _candidate, candidateDelegationCount, delegatorDelegationCount, _amount);
+    function delegate(address _candidate, uint256 _amount) public onlyOwner {
+        address delegator_ = address(this);
+        uint256 candidateDelegationCount_ = stakingContract.candidate_delegation_count(_candidate);
+        uint256 delegatorDelegationCount_ = stakingContract.delegator_delegation_count(delegator_);
+        stakingContract.delegate(_candidate, _amount, candidateDelegationCount_, delegatorDelegationCount_);
+        emit Nominate(msg.sender, delegator_, _candidate, candidateDelegationCount_, delegatorDelegationCount_, _amount);
     }
 
-    // This function should leave all delegations -- testing mode
-    function leaveDelegations() public {
-        stakingContract.schedule_leave_delegators();
-        uint256 delegatorDelegationCount = stakingContract.delegator_delegation_count(address(this));
-        stakingContract.execute_leave_delegators(delegatorDelegationCount);
+
+    /// @dev Join the set of collator candidates
+    /// @param _amount The amount self-bonded by the caller to become a collator candidate
+    function joinCandidates(uint256 _amount) external onlyOwner {
+        uint256 candidateCount_ = stakingContract.candidate_count();
+        stakingContract.join_candidates(_amount, candidateCount_);
+    }
+    
+    /// @dev Get the CandidateDelegationCount weight hint
+    /// @param _candidate The address for which we are querying the nomination count
+    /// @return The number of nominations backing the collator
+    function candidateDelegationCount(address _candidate) external view returns (uint256) {
+        return stakingContract.candidate_delegation_count(_candidate);
     }
 
-    function schedule_revoke_delegation(address _candidate) public {
-        stakingContract.schedule_revoke_delegation(_candidate);
+    /// @dev Check whether the specified address is currently a staking delegator
+    /// @param _delegator the address that we want to confirm is a delegator
+    /// @return A boolean confirming whether the address is a delegator
+    function isDelegator(address _delegator) external view returns (bool) {
+        return stakingContract.is_delegator(_delegator);
     }
 
-    function is_delegator(address _nominator) external view returns (bool) {
-        return stakingContract.is_nominator(_nominator);
-    }
-
-    function candidate_delegation_count(address _collator) external view returns (uint256) {
-        return stakingContract.candidate_delegation_count(_collator);
-    }
-
-    function is_selected_candidate(address _collator) external view returns (bool) {
-        return stakingContract.is_selected_candidate(_collator);
+    /// @dev Total points awarded to all collators in a particular round
+    /// @param _round the round for which we are querying the points total
+    /// @return The total points awarded to all collators in the round
+    function points(uint _round) external view returns(uint256) {
+        return stakingContract.points(_round);
     }
 }

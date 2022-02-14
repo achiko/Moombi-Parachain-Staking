@@ -6,12 +6,12 @@ pragma solidity >=0.8.0;
 /// We follow this same interface including four-byte function selectors, in the precompile that
 /// wraps the pallet
 interface ParachainStaking {
-    /// DEPRECATED, replaced by is_delegator
-    /// @dev Check whether the specified address is currently a staking nominator
-    /// Selector: 8e5080e7
-    /// @param nominator the address that we want to confirm is a nominator
-    /// @return A boolean confirming whether the address is a nominator
-    function is_nominator(address nominator) external view returns (bool);
+    // /// DEPRECATED, replaced by is_delegator
+    // /// @dev Check whether the specified address is currently a staking nominator
+    // /// Selector: 8e5080e7
+    // /// @param nominator the address that we want to confirm is a nominator
+    // /// @return A boolean confirming whether the address is a nominator
+    // function is_nominator(address nominator) external view returns (bool);
 
     /// @dev Check whether the specified address is currently a staking delegator
     /// Selector: 1f030587
@@ -37,11 +37,11 @@ interface ParachainStaking {
     /// @return The total points awarded to all collators in the round
     function points(uint256 round) external view returns (uint256);
 
-    /// DEPRECATED, replaced by min_delegation
-    /// @dev Get the minimum nomination amount
-    /// Selector: c9f593b2
-    /// @return The minimum nomination amount
-    function min_nomination() external view returns (uint256);
+    // /// DEPRECATED, replaced by min_delegation
+    // /// @dev Get the minimum nomination amount
+    // /// Selector: c9f593b2
+    // /// @return The minimum nomination amount
+    // function min_nomination() external view returns (uint256);
 
     /// @dev Get the minimum delegation amount
     /// Selector: 72ce8933
@@ -53,12 +53,12 @@ interface ParachainStaking {
     /// @return The CandidateCount weight hint
     function candidate_count() external view returns (uint256);
 
-    /// DEPRECATED, replaced by candidate_delegation_count
-    /// @dev Get the CollatorNominationCount weight hint
-    /// Selector: 0ad6a7be
-    /// @param collator The address for which we are querying the nomination count
-    /// @return The number of nominations backing the collator
-    function collator_nomination_count(address collator) external view returns (uint256);
+    // /// DEPRECATED, replaced by candidate_delegation_count
+    // /// @dev Get the CollatorNominationCount weight hint
+    // /// Selector: 0ad6a7be
+    // /// @param collator The address for which we are querying the nomination count
+    // /// @return The number of nominations backing the collator
+    // function collator_nomination_count(address collator) external view returns (uint256);
 
     /// @dev Get the CandidateDelegationCount weight hint
     /// Selector: 075bf970
@@ -66,12 +66,12 @@ interface ParachainStaking {
     /// @return The number of nominations backing the collator
     function candidate_delegation_count(address candidate) external view returns (uint256);
 
-    /// DEPRECATED, replaced by delegator_delegation_count
-    /// @dev Get the NominatorNominationCount weight hint
-    /// Selector: dae5659b
-    /// @param nominator The address for which we are querying the nomination count
-    /// @return The number of nominations made by the nominator
-    function nominator_nomination_count(address nominator) external view returns (uint256);
+    // /// DEPRECATED, replaced by delegator_delegation_count
+    // /// @dev Get the NominatorNominationCount weight hint
+    // /// Selector: dae5659b
+    // /// @param nominator The address for which we are querying the nomination count
+    // /// @return The number of nominations made by the nominator
+    // function nominator_nomination_count(address nominator) external view returns (uint256);
 
     /// @dev Get the DelegatorDelegationCount weight hint
     /// Selector: fbc51bca
@@ -85,12 +85,12 @@ interface ParachainStaking {
     /// @param candidateCount The number of candidates in the CandidatePool
     function join_candidates(uint256 amount, uint256 candidateCount) external;
 
-    /// DEPRECATED, replaced by schedule_leave_candidates, execute_leave_candidates,
-    /// cancel_leave_candidates
-    /// @dev Leave the set of collator candidates
-    /// Selector: 72b02a31
-    /// @param candidateCount The number of candidates in the CandidatePool
-    function leave_candidates(uint256 candidateCount) external;
+    // /// DEPRECATED, replaced by schedule_leave_candidates, execute_leave_candidates,
+    // /// cancel_leave_candidates
+    // /// @dev Leave the set of collator candidates
+    // /// Selector: 72b02a31
+    // /// @param candidateCount The number of candidates in the CandidatePool
+    // function leave_candidates(uint256 candidateCount) external;
 
     /// @dev Request to leave the set of collator candidates
     /// Selector: 60afbac6
@@ -119,12 +119,12 @@ interface ParachainStaking {
     /// @param more The additional amount self-bonded
     function candidate_bond_more(uint256 more) external;
 
-    /// DEPRECATED, replaced by schedule_candidate_bond_less, execute_candidate_bond_request,
-    /// cancel_candidate_bond_request
-    /// @dev Request to bond less for collator candidates
-    /// Selector: 289b6ba7
-    /// @param less The amount to be subtracted from self-bond and unreserved
-    function candidate_bond_less(uint256 less) external;
+    // /// DEPRECATED, replaced by schedule_candidate_bond_less, execute_candidate_bond_request,
+    // /// cancel_candidate_bond_request
+    // /// @dev Request to bond less for collator candidates
+    // /// Selector: 289b6ba7
+    // /// @param less The amount to be subtracted from self-bond and unreserved
+    // function candidate_bond_less(uint256 less) external;
 
     /// @dev Request to bond less for collator candidates
     /// Selector: 034c47bc
@@ -140,19 +140,19 @@ interface ParachainStaking {
     /// Selector: 583d0fdc
     function cancel_candidate_bond_less() external;
 
-    /// DEPRECATED, replaced by delegate
-    /// @dev Make a nomination in support of a collator candidate
-    /// Selector: 49df6eb3
-    /// @param collator The address of the supported collator candidate
-    /// @param amount The amount bonded in support of the collator candidate
-    /// @param collatorNominationCount The number of nominations in support of the candidate
-    /// @param nominatorNominationCount The number of existing nominations by the caller
-    function nominate(
-        address collator,
-        uint256 amount,
-        uint256 collatorNominationCount,
-        uint256 nominatorNominationCount
-    ) external;
+    // /// DEPRECATED, replaced by delegate
+    // /// @dev Make a nomination in support of a collator candidate
+    // /// Selector: 49df6eb3
+    // /// @param collator The address of the supported collator candidate
+    // /// @param amount The amount bonded in support of the collator candidate
+    // /// @param collatorNominationCount The number of nominations in support of the candidate
+    // /// @param nominatorNominationCount The number of existing nominations by the caller
+    // function nominate(
+    //     address collator,
+    //     uint256 amount,
+    //     uint256 collatorNominationCount,
+    //     uint256 nominatorNominationCount
+    // ) external;
 
     /// @dev Make a delegation in support of a collator candidate
     /// Selector: 829f5ee3
@@ -167,12 +167,12 @@ interface ParachainStaking {
         uint256 delegatorDelegationCount
     ) external;
 
-    /// DEPRECATED, replaced by schedule_leave_delegators, execute_leave_delegators,
-    /// cancel_leave_delegators
-    /// @dev Request to leave the set of nominators
-    /// Selector: b71d2153
-    /// @param nominatorNominationCount The number of active nominations to be revoked by caller
-    function leave_nominators(uint256 nominatorNominationCount) external;
+    // /// DEPRECATED, replaced by schedule_leave_delegators, execute_leave_delegators,
+    // /// cancel_leave_delegators
+    // /// @dev Request to leave the set of nominators
+    // /// Selector: b71d2153
+    // /// @param nominatorNominationCount The number of active nominations to be revoked by caller
+    // function leave_nominators(uint256 nominatorNominationCount) external;
 
     /// @dev Request to leave the set of delegators
     /// Selector: 65a5bbd0
@@ -187,25 +187,25 @@ interface ParachainStaking {
     /// Selector: 2a987643
     function cancel_leave_delegators() external;
 
-    /// DEPRECATED, replaced by schedule_revoke_delegation, execute_delegation_request,
-    /// cancel_delegation_request
-    /// @dev Request to revoke an existing nomination
-    /// Selector: 4b65c34b
-    /// @param collator The address of the collator candidate which will no longer be supported
-    function revoke_nomination(address collator) external;
+    // /// DEPRECATED, replaced by schedule_revoke_delegation, execute_delegation_request,
+    // /// cancel_delegation_request
+    // /// @dev Request to revoke an existing nomination
+    // /// Selector: 4b65c34b
+    // /// @param collator The address of the collator candidate which will no longer be supported
+    // function revoke_nomination(address collator) external;
 
     /// @dev Request to revoke an existing delegation
     /// Selector: 22266e75
     /// @param candidate The address of the collator candidate which will no longer be supported
     function schedule_revoke_delegation(address candidate) external;
 
-    /// DEPRECATED, replaced by schedule_delegator_bond_more, execute_delegation_request,
-    /// cancel_delegation_request
-    /// @dev Request to bond more for nominators with respect to a specific collator candidate
-    /// Selector: 971d44c8
-    /// @param candidate The address of the collator candidate for which nomination is increased
-    /// @param more The amount by which the nomination is increased
-    function nominator_bond_more(address candidate, uint256 more) external;
+    // /// DEPRECATED, replaced by schedule_delegator_bond_more, execute_delegation_request,
+    // /// cancel_delegation_request
+    // /// @dev Request to bond more for nominators with respect to a specific collator candidate
+    // /// Selector: 971d44c8
+    // /// @param candidate The address of the collator candidate for which nomination is increased
+    // /// @param more The amount by which the nomination is increased
+    // function nominator_bond_more(address candidate, uint256 more) external;
 
     /// @dev Bond more for nominators with respect to a specific collator candidate
     /// Selector: 6d988413
@@ -213,13 +213,13 @@ interface ParachainStaking {
     /// @param more The amount by which the delegation is increased
     function delegator_bond_more(address candidate, uint256 more) external;
 
-    /// DEPRECATED, replaced by schedule_delegator_bond_less, execute_delegation_request,
-    /// cancel_delegation_request
-    /// @dev Request to bond less for nominators with respect to a specific collator candidate
-    /// Selector: f6a52569
-    /// @param candidate The address of the collator candidate for which nomination is decreased
-    /// @param less The amount by which the nomination is decreased
-    function nominator_bond_less(address candidate, uint256 less) external;
+    // /// DEPRECATED, replaced by schedule_delegator_bond_less, execute_delegation_request,
+    // /// cancel_delegation_request
+    // /// @dev Request to bond less for nominators with respect to a specific collator candidate
+    // /// Selector: f6a52569
+    // /// @param candidate The address of the collator candidate for which nomination is decreased
+    // /// @param less The amount by which the nomination is decreased
+    // function nominator_bond_less(address candidate, uint256 less) external;
 
     /// @dev Request to bond less for delegators with respect to a specific collator candidate
     /// Selector: 00043acf

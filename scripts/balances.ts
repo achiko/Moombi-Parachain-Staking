@@ -8,7 +8,7 @@ async function main() {
   const [deployer, nominator] = await ethers.getSigners()
 
   const stakingContractInstance = Staking__factory.connect(STAKING_CONTRACT_ADDRESS, deployer)
-  console.log('Contract balance FROM CONTRACT: ', formatUnits(await stakingContractInstance.getTotalGLMR(), 18))
+  // console.log('Contract balance FROM CONTRACT: ', formatUnits(await stakingContractInstance.getTotalGLMR(), 18))
 
   const contractBalance = await ethers.provider.getBalance(STAKING_CONTRACT_ADDRESS)
   console.log('Contract Balance : ', formatUnits(contractBalance, 18))
@@ -22,8 +22,8 @@ async function main() {
   const userTokens = await stakingContractInstance.balanceOf(nominator.address)
   console.log('USER TOKENS : ', formatUnits(userTokens, 18))
 
-  const tokenBalance = await stakingContractInstance.tokenBalance(nominator.address)
-  console.log('tokenBalance : ', formatUnits(tokenBalance, 18))
+  // const tokenBalance = await stakingContractInstance.tokenBalance(nominator.address)
+  // console.log('tokenBalance : ', formatUnits(tokenBalance, 18))
 }
 
 main().catch((error) => {
