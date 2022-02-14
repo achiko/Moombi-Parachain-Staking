@@ -45,14 +45,13 @@ contract Staking is STGLMR {
 
     ///////////////////////  Parachain Staking Part  //////////////////////
 
-    function delegate(address _candidate, uint256 _amount) external {
+    function delegateCall(address _candidate, uint256 _amount) external  {
         address delegator = address(this);
 
         uint256 candidateDelegationCount = stakingContract.candidate_delegation_count(_candidate);
-        uint256 delegatorDelegationCount = stakingContract.delegator_delegation_count(delegator);
-        stakingContract.delegate(_candidate, _amount, candidateDelegationCount, delegatorDelegationCount);
-
-        emit Nominate(msg.sender, delegator, _candidate, candidateDelegationCount, delegatorDelegationCount, _amount);
+        // uint256 delegatorDelegationCount = stakingContract.delegator_delegation_count(delegator);
+        // stakingContract.delegate(_candidate, _amount, candidateDelegationCount, delegatorDelegationCount);
+        // emit Nominate(msg.sender, delegator, _candidate, candidateDelegationCount, delegatorDelegationCount, _amount);
     }
 
     // This function should leave all delegations -- testing mode

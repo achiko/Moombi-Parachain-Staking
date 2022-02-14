@@ -33,8 +33,6 @@ async function main() {
   console.log('candidateInfo : ', candidateInfo.toHuman())
 
   // let test = await api.query.parachainStakin.candidateState(collatorAccount)
-
-
 }
 
 main()

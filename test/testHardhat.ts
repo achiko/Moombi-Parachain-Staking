@@ -16,7 +16,7 @@ async function balanceOf(signer: SignerWithAddress): Promise<BigNumber> {
   return await staking.balanceOf(signer.address)
 }
 
-describe.only('Staking contract Local Hardhat Network', function () {
+describe('Staking contract Local Hardhat Network', function () {
   it('# 1 Test sToken (local hardhat)', async function () {
     const [deployer, nominator, nominator1, nominator2] = await ethers.getSigners()
     const deployerAddress = await deployer.getAddress()

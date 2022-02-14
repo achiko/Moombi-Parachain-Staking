@@ -19,7 +19,7 @@
 ```bash
 
     docker run --rm --name moonbeam_development -p 9944:9944 -p 9933:9933 \
-        purestake/moonbeam:v0.18.0 \
+        purestake/moonbeam:v0.20.1 \
             --dev --ws-external --rpc-external --sealing 1000
 ```
 

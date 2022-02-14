@@ -1,5 +1,5 @@
 // Import the API
-import { WsProvider } from "@polkadot/api";
+import { WsProvider } from '@polkadot/api'
 
 const { ApiPromise } = require('@polkadot/api')
 

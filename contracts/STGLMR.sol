@@ -237,14 +237,10 @@ contract STGLMR is IERC20, Ownable {
      * @return the amount of Ether that corresponds to `_sharesAmount` token shares.
      */
     function getPooledGLMRByShares(uint256 _sharesAmount) public view returns (uint256) {
-        // console.log("-->> getPooledGLMRByShares :");
         uint256 _totalShares = _getTotalShares();
-        // console.log("-->> _getTotalShares() : %s", _getTotalShares());
         if (totalShares == 0) {
-            // console.log("_totalShares = 0");
             return 0;
         } else {
-            // console.log("(_sharesAmount * _getTotalPooledGLMR()) / _totalShares %s %s %s", _sharesAmount, _getTotalPooledGLMR(),  _totalShares);
             return (_sharesAmount * _getTotalPooledGLMR()) / _totalShares;
         }
     }
@@ -259,9 +255,7 @@ contract STGLMR is IERC20, Ownable {
         address sender = msg.sender;
         uint256 _deposit = msg.value;
 
-
         uint256 sharesAmount = getSharesByPooledGLMR(_deposit);
-        console.log("SM >>> Shares Amount: %s", sharesAmount);
 
         if(sharesAmount == 0) {
             sharesAmount = _deposit;
@@ -290,19 +284,9 @@ contract STGLMR is IERC20, Ownable {
 
         newTotalShares = _getTotalShares() + _sharesAmount;
         totalShares = newTotalShares;
-
-        console.log("SM--> totalShares :  %s", totalShares/(10**18));
-
         shares[_recipient] = shares[_recipient] + _sharesAmount;
 
-        console.log("SM--> shares[%s] = %s", _recipient, shares[_recipient]/(10**18));
-
-        // Notice: we're not emitting a Transfer event from the zero address here since shares mint
-        // works by taking the amount of tokens corresponding to the minted shares from all other
-        // token holders, proportionally to their share. The total supply of the token doesn't change
-        // as the result. This is equivalent to performing a send from each other token holder's
-        // address to `address`, but we cannot reflect this as it would require sending an unbounded
-        // number of events.
+        // console.log("SM--> shares[%s] = %s", _recipient, shares[_recipient]/(10**18));
     }
 
 }
