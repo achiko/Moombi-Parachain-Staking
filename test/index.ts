@@ -6,7 +6,7 @@ import { ContractReceipt, ContractTransaction } from '@ethersproject/contracts'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { BigNumber } from 'ethers'
 
-import {} from '../substrate/createBlock'
+import { createBlock } from '../substrate/createBlock'
 import 'colors'
 
 ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.ERROR)
@@ -27,18 +27,7 @@ function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function waitUntilBlock(blockNumber: number) {
-  let currentBlock = ethers.provider.blockNumber
-  for (;;) {
-    console.log(ethers.provider.blockNumber)
-    currentBlock = ethers.provider.blockNumber
-    if (currentBlock === blockNumber) {
-      return currentBlock
-    }
-  }
-}
-
-describe.only('Staking contract', async function () {
+describe.only('STAKING', async function () {
   async function balanceOf(signer: SignerWithAddress): Promise<BigNumber> {
     return await staking.balanceOf(signer.address)
   }
@@ -52,16 +41,14 @@ describe.only('Staking contract', async function () {
   it('# Deploy All contracts ', async () => {
     ;[deployer, nominator1, nominator2, nominator3] = await ethers.getSigners()
     console.log('DEPLOYER ADDRESS : ', deployer.address)
-
     staking = await new Staking__factory(deployer).deploy(PRECOMPILED_CONTRACT_ADDRESS)
+    await createBlock(1)
     await staking.deployed()
-
+    await createBlock(1)
     STAKING_CONTRACT_ADDRESS = staking.address
     console.log('STAKING_CONTRACT_ADDRESS : ', STAKING_CONTRACT_ADDRESS)
-
     let totalDeposited = await staking.totalDeposited()
     assert.isTrue(totalDeposited.eq(ZERO_UNIT), 'WRONG totalDeposited')
-    console.log(totalDeposited.toString())
   })
 
   it('#1 Should get correct intiall parameters ', async function () {
@@ -97,41 +84,78 @@ describe.only('Staking contract', async function () {
     console.log(` ---- Nominators ---- `.green)
     console.log(`// nominator1: Deposit 10 GLMR`.yellow)
     let tx1 = await staking.connect(nominator1).deposit({ value: parseUnits('10', 18) })
+    await createBlock(1)
     await tx1.wait(1)
     let nominator1Balance = await balanceOf(nominator1)
+    console.log('Balance : ', nominator1Balance.toString())
     assert.isTrue(nominator1Balance.eq(parseUnits('10', 18)), 'NOMINATOR-1 BALANCE WRONG')
     assert.isTrue((await staking.totalSupply()).eq(parseUnits('10', 18)), 'TOTAL SUPPLY WRONG')
 
     console.log(`// nominator2: Deposit 10 GLMR`.yellow)
     let tx2 = await staking.connect(nominator2).deposit({ value: parseUnits('10', 18) })
+    await createBlock(1)
     await tx2.wait(1)
     let nominator2Balance = await balanceOf(nominator2)
     assert.isTrue(nominator2Balance.eq(ONE_UNIT.mul(10)), 'NOMINATOR-2 BALANCE WRONG')
     assert.isTrue((await staking.totalSupply()).eq(ONE_UNIT.mul(20)), 'TOTAL SUPPLY WRONG')
 
-    console.log(`// nominator3: Deposit 30 GLMR`.yellow)
-    let tx3 = await staking.connect(nominator3).deposit({ value: parseUnits('30', 18) })
+    console.log(`// nominator3: Deposit 1000 GLMR`.yellow)
+    let tx3 = await staking.connect(nominator3).deposit({ value: parseUnits('1000', 18) })
+    await createBlock(1)
     await tx3.wait(1)
     let nominator3Balance = await balanceOf(nominator3)
-    assert.isTrue(nominator3Balance.eq(ONE_UNIT.mul(30)), 'NOMINATOR-3 BALANCE WRONG')
-    assert.isTrue((await staking.totalSupply()).eq(ONE_UNIT.mul(50)), 'TOTAL SUPPLY WRONG')
+    assert.isTrue(nominator3Balance.eq(ONE_UNIT.mul(1000)), 'NOMINATOR-3 BALANCE WRONG')
+    assert.isTrue((await staking.totalSupply()).eq(ONE_UNIT.mul(1020)), 'TOTAL SUPPLY WRONG')
 
     console.log(`// Chek if the balanses is not worong after state Update`.yellow)
     assert.isTrue((await balanceOf(nominator1)).eq(ONE_UNIT.mul(10)), 'NOMINATOR-1 BALANCE WRONG')
     assert.isTrue((await balanceOf(nominator2)).eq(ONE_UNIT.mul(10)), 'NOMINATOR-1 BALANCE WRONG')
 
-    console.log('--- Start Delegating --- '.green)
-    let tx4 = await staking.addStake(COLLATOR, parseUnits('30', 18))
+    console.log(`--- Start Delegating --- `.green)
+    let tx4 = await staking.delegate(COLLATOR, parseUnits('1000', 18))
+    await createBlock(1)
     await tx4.wait(1)
+    await createBlock(1)
 
-    console.log(` Final Chek all Accounts ... `.yellow)
+    console.log(`Chek all Accounts balances ... `.yellow)
     assert.isTrue((await balanceOf(nominator1)).eq(ONE_UNIT.mul(10)), 'NOMINATOR-1 BALANCE WRONG')
     assert.isTrue((await balanceOf(nominator2)).eq(ONE_UNIT.mul(10)), 'NOMINATOR-1 BALANCE WRONG')
-    assert.isTrue((await balanceOf(nominator3)).eq(ONE_UNIT.mul(30)), 'NOMINATOR-3 BALANCE WRONG')
-    assert.isTrue((await staking.totalSupply()).eq(ONE_UNIT.mul(50)), 'TOTAL SUPPLY WRONG')
-    console.log(` Done !!! `.green)
+    assert.isTrue((await balanceOf(nominator3)).eq(ONE_UNIT.mul(1000)), 'NOMINATOR-3 BALANCE WRONG')
+    assert.isTrue((await staking.totalSupply()).eq(ONE_UNIT.mul(1020)), 'TOTAL SUPPLY WRONG')
+    assert.isTrue((await staking.getGLMRBalance()).eq(parseUnits('20', 18)), 'THE CONTRACT BALANCE IS WRONG')
 
-    console.log(`The COntract GLMG Balance is : ${await staking.geGLMRBalance()}`)
+    console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
+    await createBlock(1700)
+    console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
+
+    console.log(`scheduleDelegatorBondLess ..... `.bgGreen)
+    let tx5 = await staking.scheduleDelegatorBondLess(COLLATOR, parseUnits('400', 18))
+    await createBlock(1)
+    await tx5.wait(1)
+    await createBlock(1800)
+
+    console.log(`Execute Bond Less Request ..... `.bgGreen)
+    let tx5_1 = await staking.executeDelegationRequest(COLLATOR)
+    await createBlock(1)
+    await tx5_1.wait(1)
+    await createBlock(10)
+
+    console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
+
+    /// REVOKE DELEGATION !!!
+    console.log(`Revoke delegation ..... `.bgGreen)
+    let tx6 = await staking.scheduleRevokeDelegation(COLLATOR)
+    await createBlock(1)
+    await tx6.wait(1)
+    await createBlock(1800)
+
+    console.log(`Execute Revoke Request ..... `.bgGreen)
+    let tx6_1 = await staking.executeDelegationRequest(COLLATOR)
+    await createBlock(1)
+    await tx6_1.wait(1)
+    await createBlock(10)
+
+    console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
   })
 
   it.skip('# 2 Work with existing Staking Contract ', async function () {
@@ -146,7 +170,7 @@ describe.only('Staking contract', async function () {
     const tx1 = await stakingContractInstance.connect(nominator1).deposit({ value: ONE_UNIT.mul(10) })
     parseLogs(await tx1.wait(1))
 
-    const tx2 = await stakingContractInstance.addStake(COLLATOR, ONE_UNIT.mul(11), gasParams)
+    const tx2 = await stakingContractInstance.delegate(COLLATOR, ONE_UNIT.mul(11), gasParams)
 
     const txResult = await tx2.wait(1)
 
@@ -204,6 +228,7 @@ async function readSnapshot(stakingContractInstance: Staking) {
 }
 
 // Log parser
+// TODO: Move to  utils/logParsers
 function parseLogs(result: ContractReceipt) {
   return console.log('null') // --- temp --- ///
   // eslint-disable-next-line no-unreachable

@@ -9,7 +9,8 @@ import { createBlock } from './createBlock'
 async function main() {
   const provider = new WsProvider('ws://127.0.0.1:9944')
   const api = await ApiPromise.create({ provider })
-  await createBlock(api, 24000)
+
+  await createBlock(1700)
 }
 
 main()

@@ -223,12 +223,18 @@ contract STGLMR is IERC20, Ownable {
     */
     // TODO: This function need to be modified and testsd carefully 
     function _getTotalPooledGLMR() internal view returns (uint256) {
-        //return totalDeposited; // this is temporary 
         if(totalStaked < totalDeposited) {
             return totalDeposited + totalRewarded - totalStaked + totalUnstaked;
         }else{
             return totalStaked + totalRewarded - totalDeposited + totalUnstaked;
         }
+    }
+
+    
+    function _getRewardedGLMR() public view returns (uint256) {
+        uint256 contractBalance = address(this).balance; 
+        uint256 _totalRewarded = totalDeposited - contractBalance;
+        return _totalRewarded;
     }
 
     /**
@@ -295,8 +301,6 @@ contract STGLMR is IERC20, Ownable {
         newTotalShares = _getTotalShares() + _sharesAmount;
         totalShares = newTotalShares;
         shares[_recipient] = shares[_recipient] + _sharesAmount;
-
-        // console.log("SM--> shares[%s] = %s", _recipient, shares[_recipient]/(10**18));
     }
 
 }

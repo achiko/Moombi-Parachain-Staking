@@ -53,6 +53,29 @@ contract Staking is STGLMR {
         emit Nominate(msg.sender, delegator_, _candidate, candidateDelegationCount_, delegatorDelegationCount_, _amount);
     }
 
+    // Increase Bound 
+    function delegatorBondMore(address _candidate, uint256 _more) public onlyOwner {
+        stakingContract.delegator_bond_more(_candidate, _more);
+    }
+
+    // schedule_revoke_delegation
+    function scheduleDelegatorBondLess(address _candidate, uint256 _less) public onlyOwner {
+        stakingContract.schedule_delegator_bond_less(_candidate, _less);    
+    }
+
+    function executeCandidateBondLess(address _candidate) public onlyOwner {
+        stakingContract.execute_candidate_bond_less(_candidate);
+    }
+    
+    
+    function scheduleRevokeDelegation(address _candidate) public onlyOwner {
+        stakingContract.schedule_revoke_delegation(_candidate);
+    }
+
+    function executeDelegationRequest(address _candidate) public onlyOwner {
+        address delegator = address(this);
+        stakingContract.execute_delegation_request(delegator,_candidate);
+    }
 
     /// @dev Join the set of collator candidates
     /// @param _amount The amount self-bonded by the caller to become a collator candidate

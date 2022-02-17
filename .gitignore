@@ -11,3 +11,4 @@ artifacts
 .env.local
 .notes.hoide.txt
 .idea
+.deps
