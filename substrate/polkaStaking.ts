@@ -103,6 +103,8 @@ async function main() {
 
   const totalStaked = await api.query.parachainStaking.total()
   console.log('Total Staked : ', totalStaked.toHuman())
+
+  process.exit(0)
 }
 
 main().catch((error) => {

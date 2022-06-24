@@ -6,10 +6,17 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
 contract STGLMR is IERC20, Ownable {
+
     uint256 public totalDeposited;
     uint256 public totalStaked;
     uint256 public totalRewarded;
     uint256 public totalUnstaked;
+
+    uint8 public state = 0;
+
+    // public const STATE_OPERATIONAL = 0;
+    // const STATE_SHUTDOWN = 1;
+    // const STATE_WITHDRAWAL = 2;
     
     uint256 public totalShares;
 
@@ -217,25 +224,26 @@ contract STGLMR is IERC20, Ownable {
         return totalShares;
     }
     
+
+    function _getTotalrewarded() internal view returns(uint256) {
+        return address(this).balance + totalStaked - totalUnstaked - totalDeposited;
+    }
+
     /**
     * @dev Gets the total amount of GLMR controlled by the system
     * @return total balance in wei
     */
     // TODO: This function need to be modified and testsd carefully 
     function _getTotalPooledGLMR() internal view returns (uint256) {
-        if(totalStaked < totalDeposited) {
-            return totalDeposited + totalRewarded - totalStaked + totalUnstaked;
-        }else{
-            return totalStaked + totalRewarded - totalDeposited + totalUnstaked;
-        }
+        return totalDeposited;
+        // if(totalStaked < totalDeposited) {
+        //     //totalRewarded = (address(this).balance + (totalStaked - totalUnstaked) ) - totalDeposited;
+        //     return totalDeposited + totalRewarded - (totalStaked - totalUnstaked);
+        // }else{
+        //     return totalStaked + totalRewarded - totalDeposited + totalUnstaked;
+        // }
     }
 
-    
-    function _getRewardedGLMR() public view returns (uint256) {
-        uint256 contractBalance = address(this).balance; 
-        uint256 _totalRewarded = totalDeposited - contractBalance;
-        return _totalRewarded;
-    }
 
     /**
      * @return the amount of shares that corresponds to `_ethAmount` protocol-controlled Ether.
@@ -262,9 +270,24 @@ contract STGLMR is IERC20, Ownable {
     }
 
 
+    receive() external payable { 
+        // console.log("SM--> tx.gasleft: %", gasleft());
+        totalRewarded += msg.value; 
+        // console.log("SM--> tx.gasleft: %", gasleft());
+    }
+
+    fallback() external payable { 
+        totalRewarded += msg.value; 
+    }
+
+    function getTotalRewardedGLMR() public view returns (uint256) {
+        return totalRewarded;
+    }
+
+
     // Deposit
     // TODO: Add modifier whenNotPaused (From zeppelin)
-
+    // TODO: Add onlyOperational modyfier
     function deposit() public payable returns (uint256) {
         require(msg.value != 0, "WRONG DEPOSIT AMOUNT !");
 

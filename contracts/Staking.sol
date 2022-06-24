@@ -47,6 +47,8 @@ contract Staking is STGLMR {
 
     function delegate(address _candidate, uint256 _amount) public onlyOwner {
         address delegator_ = address(this);
+        totalStaked += _amount;
+
         uint256 candidateDelegationCount_ = stakingContract.candidate_delegation_count(_candidate);
         uint256 delegatorDelegationCount_ = stakingContract.delegator_delegation_count(delegator_);
         stakingContract.delegate(_candidate, _amount, candidateDelegationCount_, delegatorDelegationCount_);
@@ -54,30 +56,36 @@ contract Staking is STGLMR {
     }
 
     // Increase Bound 
-    function delegatorBondMore(address _candidate, uint256 _more) public onlyOwner {
+    // TODO: Add Modifier onlyOperational
+    function delegatorBondMore(address _candidate, uint256 _more) public onlyOwner  {
+        totalStaked += _more;
         stakingContract.delegator_bond_more(_candidate, _more);
     }
 
     // schedule_revoke_delegation
-    function scheduleDelegatorBondLess(address _candidate, uint256 _less) public onlyOwner {
+    // TODO : Add Modifier onlyOperational
+    function scheduleDelegatorBondLess(address _candidate, uint256 _less) public onlyOwner  {
+        totalUnstaked += _less;
         stakingContract.schedule_delegator_bond_less(_candidate, _less);    
     }
 
-    function executeCandidateBondLess(address _candidate) public onlyOwner {
+    // TODO: Add Modifier: onlyOperational
+    function executeCandidateBondLess(address _candidate) public onlyOwner  {
         stakingContract.execute_candidate_bond_less(_candidate);
     }
     
-    
-    function scheduleRevokeDelegation(address _candidate) public onlyOwner {
+    // Revoke Delegation    
+    // Add Modifier: onlyShutdown 
+    function scheduleRevokeDelegation(address _candidate) public  {
         stakingContract.schedule_revoke_delegation(_candidate);
     }
 
-    function executeDelegationRequest(address _candidate) public onlyOwner {
+    function executeDelegationRequest(address _candidate) public {
         address delegator = address(this);
         stakingContract.execute_delegation_request(delegator,_candidate);
     }
 
-    /// @dev Join the set of collator candidates
+    /// @dev Join the set of collator candifdates
     /// @param _amount The amount self-bonded by the caller to become a collator candidate
     function joinCandidates(uint256 _amount) external onlyOwner {
         uint256 candidateCount_ = stakingContract.candidate_count();
@@ -104,4 +112,8 @@ contract Staking is STGLMR {
     function points(uint _round) external view returns(uint256) {
         return stakingContract.points(_round);
     }
+
+    // function shutdown() onlyOwner {
+    //     state = STATE_SHUTDOWN;
+    // }
 }

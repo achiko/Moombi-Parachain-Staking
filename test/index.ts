@@ -118,7 +118,10 @@ describe.only('STAKING', async function () {
     await createBlock(1)
 
     console.log(`Chek all Accounts balances ... `.yellow)
+
+    console.log('balanceOf(nominator1)', (await balanceOf(nominator1)).toString())
     assert.isTrue((await balanceOf(nominator1)).eq(ONE_UNIT.mul(10)), 'NOMINATOR-1 BALANCE WRONG')
+
     assert.isTrue((await balanceOf(nominator2)).eq(ONE_UNIT.mul(10)), 'NOMINATOR-1 BALANCE WRONG')
     assert.isTrue((await balanceOf(nominator3)).eq(ONE_UNIT.mul(1000)), 'NOMINATOR-3 BALANCE WRONG')
     assert.isTrue((await staking.totalSupply()).eq(ONE_UNIT.mul(1020)), 'TOTAL SUPPLY WRONG')
@@ -127,18 +130,6 @@ describe.only('STAKING', async function () {
     console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
     await createBlock(1700)
     console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
-
-    console.log(`scheduleDelegatorBondLess ..... `.bgGreen)
-    let tx5 = await staking.scheduleDelegatorBondLess(COLLATOR, parseUnits('400', 18))
-    await createBlock(1)
-    await tx5.wait(1)
-    await createBlock(1800)
-
-    console.log(`Execute Bond Less Request ..... `.bgGreen)
-    let tx5_1 = await staking.executeDelegationRequest(COLLATOR)
-    await createBlock(1)
-    await tx5_1.wait(1)
-    await createBlock(10)
 
     console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
 
@@ -155,6 +146,7 @@ describe.only('STAKING', async function () {
     await tx6_1.wait(1)
     await createBlock(10)
 
+    console.log(`Total rewarded Tokens :  ${formatUnits(await staking.getTotalRewardedGLMR(), 18)}`.green)
     console.log(`Contract GLMR Balance is: ${formatUnits(await staking.getGLMRBalance(), 18)}`.green)
   })
 
